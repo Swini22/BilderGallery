@@ -94,8 +94,8 @@ function fotos() {
 function foto() {
     if (isset($_POST["upload"])) {
         $target_dir = "../images/" . $_SESSION['userId'] . '/';
-        mkdir($target_dir);
-
+        if(!is_dir($target_dir))
+            mkdir($target_dir);
         $target_extension = explode('.', basename($_FILES["fileToUpload"]["name"]))[1];
         $target_name = uniqid();
         $target_filepath = $target_dir . $target_name . '.' . $target_extension;
