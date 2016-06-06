@@ -54,23 +54,20 @@ function saveThumbnail($image, $path, $thumbname) {
     $new_height = 120;
     $new_width = floor($width * ($new_height / $height));;
 
-    list(,,$type) = getimagesize($image['tmp_name']);
+    list(, , $type) = getimagesize($image['tmp_name']);
     $type = image_type_to_extension($type);
 
-    $getResourceOfImage = 'imagecreatefrom'.$type;
-    $getResourceOfImage = str_replace('.','',$getResourceOfImage);
+    $getResourceOfImage = 'imagecreatefrom' . $type;
+    $getResourceOfImage = str_replace('.', '', $getResourceOfImage);
     $img = $getResourceOfImage($image["tmp_name"]);
 
 // create a new temporary image
     $tmp_img = imagecreatetruecolor($new_width, $new_height);
 // copy and resize old image into new image
     imagecopyresized($tmp_img, $img, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
-echo $path.$thumbname;
 // save thumbnail into a file
     imagejpeg($tmp_img, "{$path}{$thumbname}");
-//    $c = 'image'.$type;
-//    $c = str_replace('.','',$c);
-//    $c( $tmp_img, 'uploads/'.$k.'_'.$prefix.$type );
+    return $path . $thumbname;
 }
 
 /*
@@ -85,6 +82,9 @@ function getAllGallerys() {
  * Beinhaltet die Anwendungslogik zum Hinzufügen von Fotos zu einem Album
  */
 function fotos() {
+    if (isset($_POST["delete"])) {
+        var_dump($_POST);
+    }
 
     // Template abfüllen und Resultat zurückgeben
     setValue('phpmodule', $_SERVER['PHP_SELF'] . "?id=" . __FUNCTION__);
@@ -94,15 +94,21 @@ function fotos() {
 function foto() {
     if (isset($_POST["upload"])) {
         $target_dir = "../images/" . $_SESSION['userId'] . '/';
-        if(!is_dir($target_dir))
+        if (!is_dir($target_dir))
             mkdir($target_dir);
         $target_extension = explode('.', basename($_FILES["fileToUpload"]["name"]))[1];
         $target_name = uniqid();
         $target_filepath = $target_dir . $target_name . '.' . $target_extension;
         $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
         if ($check !== false) {
-            saveThumbnail($_FILES["fileToUpload"], $target_dir, $target_name . ".thumb." . $target_extension);
+            $tags = null;
+
+            if (isset($_POST["tags"])) {
+                $tags = $_POST["tags"];
+            }
+            $thumbnailPath = saveThumbnail($_FILES["fileToUpload"], $target_dir, $target_name . ".thumb." . $target_extension);
             move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_filepath);
+            db_insert_image($_SESSION['recentGallery'], $target_filepath, $thumbnailPath, $tags);
         } else {
             echo "File is not an image.";
         }
@@ -113,12 +119,8 @@ function foto() {
 }
 
 function getAllFotos($id) {
-    $imageList[] = db_select_all_Images_by_id($id);
+    $imageList = db_select_all_Images_by_id($id);
     setValue('imageList', $imageList);
-}
-
-function huhu() {
-    setValue('huhu', "huhu");
 }
 
 /*
@@ -163,12 +165,17 @@ function prepareImages($id) {
 }
 
 function setFirstFotoPath($galleryId) {
-    $images[] = db_select_all_Images_by_id($galleryId);
-    if ($images[0] == null) {
+    $images = db_select_gallery_teaser($galleryId);
+    if ($images == null) {
         setValue('path', '../default_images/default.png');
     } else {
-        setValue('path', $images[0]['thumbnail']);
+        setValue('path', $images['thumbnail']);
     }
+}
+
+function setTags() {
+    $tags = db_get_all_tags();
+    setValue('tags', $tags);
 }
 
 ?>

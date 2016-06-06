@@ -119,11 +119,11 @@ function getMetaMenu($mlist) {
     $printmenu = "";
     foreach ($mlist as $index => $value) {
         if (strlen($value) > 0) {
-            $printmenu .= "<a class='meta_menu' href='" . $_SERVER['PHP_SELF'] . "?id=" . $index . "'>" . $value . "</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+            $printmenu .= "<li><a class='meta_menu' href='" . $_SERVER['PHP_SELF'] . "?id=" . $index . "'>" . $value . "</a></li>";
         } else {
             $username = getUserName();
             if (strlen($username) > 0) {
-                $printmenu .= "<a class='meta_menu' href='" . $_SERVER['PHP_SELF'] . "?id=" . getValue('func') . "'>" . getUserName() . "</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                $printmenu .= "<li><a class='meta_menu' href='" . $_SERVER['PHP_SELF'] . "?id=" . getValue('func') . "'>" . getUserName() . "</a></li>";
             }
         }
     }
@@ -190,6 +190,8 @@ function sqlSelect($sql) {
 function sqlQuery($sql) {
     $result = mysqli_query(getValue('cfg_db'), $sql);
     if (!$result) die(mysqli_error(getValue('cfg_db')) . "<pre>" . $sql . "</pre>");
+    
+    return mysqli_insert_id(getValue('cfg_db'));
 }
 
 /**

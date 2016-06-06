@@ -12,6 +12,8 @@
     <!-- Optional theme -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
 
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 </head>
@@ -34,7 +36,7 @@
                     <button type="submit" class="btn btn-default">Submit</button>
                 </form>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#">Link</a></li>
+                    <li><?php echo getMetaMenu(getValue(getValue('meta_menu'))); ?></li>
                 </ul>
             </div>
         </div>
@@ -45,7 +47,7 @@
         </tr>
         <tr>
             <td class="" height="20" colspan="2">
-                <?php echo getMetaMenu(getValue(getValue('meta_menu'))); ?>
+
             </td>
         </tr>
         <tr>
