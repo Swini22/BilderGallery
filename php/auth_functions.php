@@ -22,8 +22,8 @@ function registration() {
             // Wenn alles ok
         } else {
             db_insert_user($_REQUEST, passwordHash($_REQUEST['password']));
-			setValue('css_class_meldung', "alert-info show");
-			setValue('meldung', "Registration erfolgreich. Bitte melden Sie sich an.");
+            setValue('css_class_meldung', "alert-info show");
+            setValue('meldung', "Registration erfolgreich. Bitte melden Sie sich an.");
         }
         // Der Schaltknopf "abbrechen" wurde betätigt
     } else if (isset($_REQUEST['abbrechen'])) {
@@ -33,6 +33,20 @@ function registration() {
     // Template abfüllen und Resultat zurückgeben
     setValue('phpmodule', $_SERVER['PHP_SELF'] . "?id=" . __FUNCTION__);
     return runTemplate("../templates/registration.htm.php");
+}
+
+/*
+ * Beinhaltet die Anwendungslogik zur änderung von Userdaten und zur löschung
+ */
+function userchange() {
+    if (isset($_REQUEST['delete'])) {
+        db_delete_user($_SESSION['userId']);
+        logout();
+    }
+
+    // Template abfüllen und Resultat zurückgeben
+    setValue('phpmodule', $_SERVER['PHP_SELF'] . "?id=" . __FUNCTION__);
+    return runTemplate("../templates/userchange.htm.php");
 }
 
 /*
@@ -123,8 +137,8 @@ function checkLoginGetId() {
     if (empty($resultat)) {
         return 0;
         // Vergleich, ob beide Passwörter identisch
-    } elseif (password_verify($_REQUEST['password'], $resultat[0]['password'])) {
-        return $resultat[0]['id_user'];
+    } elseif (password_verify($_REQUEST['password'], $resultat['password'])) {
+        return $resultat['id_user'];
     } else return 0;
 }
 

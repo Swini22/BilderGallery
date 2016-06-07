@@ -9,18 +9,22 @@
         </form>
     </div>
     <div class="row">
-        <?php if (getValue('imageList') !== null) { ?>
+        <?php if (getValue('imageList') != null) { ?>
             <?php foreach (getValue('imageList') as $image) { ?>
-                <form method="post" action="<?php echo getValue('phpmodule')?>>
+
+                <form method="post" action="<?php echo getValue('phpmodule') ?>">
                     <figure class="figure col-sm-2">
-                        <a href="<?php echo $image['image_link'] ?>" target="_blank" class="thumbnail">
-                            <img src="<?php echo $image['thumbnail'] ?>" class="figure-img img-thumbnail" alt="tags">
+                        <a href="bild.php?bild=<?php echo $image['image_link'] ?>" target="_blank" class="thumbnail">
+                            <img src="bild.php?bild=<?php echo $image['thumbnail'] ?>" class="figure-img img-thumbnail" alt="image not found">
                         </a>
                         <figcaption class="figure-caption">tags</figcaption>
                         <button type="submit" name="delete" class="btn btn-danger"><i
-                                class="glyphicon glyphicon-trash"></i>&nbsp;Delete image
+                                class="glyphicon glyphicon-trash"></i>&nbsp;Delete
                         </button>
-                        <input type="hidden" name="foto_id" value="<?php $image['id_image'] ?>">
+                        <button type="submit" name="edit" class="btn btn-info"><i
+                                class="glyphicon glyphicon-pencil"></i>&nbsp;Edit
+                        </button>
+                        <input type="hidden" name="foto_id" value="<?php echo $image['id_image'] ?>">
                     </figure>
                 </form>
             <?php }

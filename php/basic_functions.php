@@ -123,7 +123,7 @@ function getMetaMenu($mlist) {
         } else {
             $username = getUserName();
             if (strlen($username) > 0) {
-                $printmenu .= "<li><a class='meta_menu' href='" . $_SERVER['PHP_SELF'] . "?id=" . getValue('func') . "'>" . getUserName() . "</a></li>";
+                $printmenu .= "<li><a class='meta_menu' href='" . $_SERVER['PHP_SELF'] . "?id=userchange'>" . getUserName() . "</a></li>";
             }
         }
     }
@@ -182,6 +182,15 @@ function sqlSelect($sql) {
     return $data;
 }
 
+/* check DB connection */
+function checkConnection(){
+    if (mysqli_connect_errno()) {
+        printf("Connect failed: %s\n", mysqli_connect_error());
+        exit();
+    }else{
+        return true;
+    }
+}
 /**
  * Führt einen SQL-Befehl aus.
  *

@@ -3,6 +3,7 @@
 <div class="hide alert <?php echo getValue('css_class_meldung'); ?>">
     <?php echo getValue('meldung')."&nbsp;"; ?>
 </div>
+
 <form name="registration" action="<?php echo getValue('phpmodule'); ?>" method="post">
     
     <fieldset class="form-group">

@@ -12,8 +12,16 @@
  * Beinhaltet die Anwendungslogik zur Anzeige und zum Bearbeiten von allen Fotoalben
  */
 function fotoalben() {
-    getAllGallerys();
+    if (isset($_POST["delete"])) {
+        db_delete_gallery($_POST["gallery_id"]);
+    }
+    if (isset($_POST["edit"])) {
+        // Template abfüllen und Resultat zurückgeben
+        setValue('phpmodule', $_SERVER['PHP_SELF'] . "?id=foto");
+        return runTemplate("../templates/foto.htm.php");
+    }
 
+    getAllGallerys();
     setValue('phpmodule', $_SERVER['PHP_SELF'] . "?id=" . __FUNCTION__);
     return runTemplate("../templates/fotoalben.htm.php");
 }
@@ -83,7 +91,12 @@ function getAllGallerys() {
  */
 function fotos() {
     if (isset($_POST["delete"])) {
-        var_dump($_POST);
+        db_delete_image($_POST["foto_id"]);
+    }
+    if (isset($_POST["edit"])) {
+        // Template abfüllen und Resultat zurückgeben
+        setValue('phpmodule', $_SERVER['PHP_SELF'] . "?id=foto");
+        return runTemplate("../templates/foto.htm.php");
     }
 
     // Template abfüllen und Resultat zurückgeben
@@ -141,12 +154,17 @@ function getUserName($userId = 0) {
         $user = db_get_user($userId);
         if (count($user)) {
             // Falls Username vorhanden: diesen Wert holen
-            if (strlen($user[0]['username']) > 0) $userName = $user[0]['username'];
+            if (strlen($user['username']) > 0) $userName = $user['username'];
             // Ansonsten die Mailadresse verwenden
-            else $userName = $user[0]['email'];
+            else $userName = $user['email'];
         }
     }
     return $userName;
+}
+
+function setUserDaten($id){
+    $user = db_get_user($id);
+    setValue('user', $user);
 }
 
 function checkAlbum() {
@@ -160,14 +178,14 @@ function checkAlbum() {
 
 function prepareImages($id) {
     $recentGallery = db_get_gallery_by_id($id);
-    setValue('recentGallery', $recentGallery[0]);
-    getAllFotos($recentGallery[0]['id_gallery']);
+    setValue('recentGallery', $recentGallery);
+    getAllFotos($recentGallery['id_gallery']);
 }
 
 function setFirstFotoPath($galleryId) {
     $images = db_select_gallery_teaser($galleryId);
     if ($images == null) {
-        setValue('path', '../default_images/default.png');
+        setValue('path', '../images/default_images/default.png');
     } else {
         setValue('path', $images['thumbnail']);
     }
