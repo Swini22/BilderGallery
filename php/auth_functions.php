@@ -57,6 +57,7 @@ function login() {
     if (isset($_REQUEST['senden'])) {
         $userId = checkLoginGetId();
         if ($userId > 0) {
+            session_regenerate_id();
             setSessionValue("userId", $userId);
             $flist = getValue('cfg_func_member');
             redirect($flist[0]);

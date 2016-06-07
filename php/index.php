@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 include("basic_functions.php");
 include("config.php");
@@ -14,6 +13,7 @@ if (angemeldet()) {
     // Falls cfg_func_member nicht existiert, abbrechen!
     $flist = getValue('cfg_func_member');
     if (!count($flist)) die("cfg_func_member nicht definiert!");
+
     // Das Menu aufs Hauptmenu setzen (Memberbereich)
     setValue('menu_titel', 'Main-Menu');
     setValue('menu_eintraege', 'cfg_menu_member');

@@ -31,10 +31,6 @@
                 <ul class="nav navbar-nav">
                     <?php echo getMenu(getValue(getValue('menu_eintraege')), getValue('menu_titel')); ?>
                 </ul>
-                <form class="navbar-form navbar-left" role="search">
-                    <div class="form-group"><input type="text" class="form-control" placeholder="Search"></div>
-                    <button type="submit" class="btn btn-default">Submit</button>
-                </form>
                 <ul class="nav navbar-nav navbar-right">
                     <li><?php echo getMetaMenu(getValue(getValue('meta_menu'))); ?></li>
                 </ul>

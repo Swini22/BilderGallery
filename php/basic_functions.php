@@ -149,6 +149,16 @@ function setSessionValue($key, $value) {
     $_SESSION[$key] = $value;
 }
 
+
+/*
+ * Wert aus den superglobalen Array $_SESSION löschen
+ *
+ * @param       $key      Index des gewünschten Wertes
+ *
+ */
+function unsetSessionValue($key) {
+    unset($_SESSION[$key]);
+}
 /*
  * Wert aus dem superglobalen Array $_SESSION lesen
  *
@@ -169,18 +179,6 @@ function escapeSpecialChars($attribut) {
     return mysqli_real_escape_string(getValue('cfg_db'), $attribut);
 }
 
-/**
- * Übergebene SQL-Anweisung auf der DB ausführen und Resultat zurückgeben.
- *
- * @param   $sql       Select-Befehl, welcher ausgeführt werden soll
- */
-function sqlSelect($sql) {
-    $data = "";
-    $result = mysqli_query(getValue('cfg_db'), $sql);
-    if (!$result) die("Fehler: " . mysqli_error(getValue('cfg_db')));
-    while ($row = mysqli_fetch_assoc($result)) $data[] = $row;
-    return $data;
-}
 
 /* check DB connection */
 function checkConnection(){
@@ -190,17 +188,6 @@ function checkConnection(){
     }else{
         return true;
     }
-}
-/**
- * Führt einen SQL-Befehl aus.
- *
- * @param   $sql    SQL-Befehl, welcher ausgeführt werden soll
- */
-function sqlQuery($sql) {
-    $result = mysqli_query(getValue('cfg_db'), $sql);
-    if (!$result) die(mysqli_error(getValue('cfg_db')) . "<pre>" . $sql . "</pre>");
-    
-    return mysqli_insert_id(getValue('cfg_db'));
 }
 
 /**

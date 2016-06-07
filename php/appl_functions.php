@@ -90,6 +90,9 @@ function getAllGallerys() {
  * Beinhaltet die Anwendungslogik zum Hinzufügen von Fotos zu einem Album
  */
 function fotos() {
+    if (isset($_GET["tag"])) {
+        setSessionValue('tag',$_GET["tag"]);
+    }
     if (isset($_POST["delete"])) {
         db_delete_image($_POST["foto_id"]);
     }
@@ -106,24 +109,31 @@ function fotos() {
 
 function foto() {
     if (isset($_POST["upload"])) {
-        $target_dir = "../images/" . $_SESSION['userId'] . '/';
-        if (!is_dir($target_dir))
-            mkdir($target_dir);
-        $target_extension = explode('.', basename($_FILES["fileToUpload"]["name"]))[1];
-        $target_name = uniqid();
-        $target_filepath = $target_dir . $target_name . '.' . $target_extension;
-        $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
-        if ($check !== false) {
-            $tags = null;
-
-            if (isset($_POST["tags"])) {
-                $tags = $_POST["tags"];
+        if ($_FILES["fileToUpload"]["tmp_name"] !== "") {
+            $target_dir = "../images/" . $_SESSION['userId'] . '/';
+            if (!is_dir($target_dir))
+                mkdir($target_dir);
+            $target_extension = explode('.', basename($_FILES["fileToUpload"]["name"]))[1];
+            $target_name = uniqid();
+            $target_filepath = $target_dir . $target_name . '.' . $target_extension;
+            // $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+            if (@is_array(getimagesize($_FILES["fileToUpload"]["tmp_name"]))) {
+                $tags = null;
+                if (isset($_POST["tags"])) {
+                    $tags = $_POST["tags"];
+                }
+                $thumbnailPath = saveThumbnail($_FILES["fileToUpload"], $target_dir, $target_name . ".thumb." . $target_extension);
+                move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_filepath);
+                db_insert_image($_SESSION['recentGallery'], $target_filepath, $thumbnailPath, $tags);
+                setValue('css_class_meldung', "alert-info show");
+                setValue('meldung', "Image Added successfully.");
+            } else {
+                setValue('css_class_meldung', "alert-warning show");
+                setValue('meldung', "File is not an image.");
             }
-            $thumbnailPath = saveThumbnail($_FILES["fileToUpload"], $target_dir, $target_name . ".thumb." . $target_extension);
-            move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_filepath);
-            db_insert_image($_SESSION['recentGallery'], $target_filepath, $thumbnailPath, $tags);
         } else {
-            echo "File is not an image.";
+            setValue('css_class_meldung', "alert-warning show");
+            setValue('meldung', "please add an image.");
         }
     }
     // Template abfüllen und Resultat zurückgeben
@@ -131,9 +141,21 @@ function foto() {
     return runTemplate("../templates/foto.htm.php");
 }
 
-function getAllFotos($id) {
-    $imageList = db_select_all_Images_by_id($id);
-    setValue('imageList', $imageList);
+function getAllFotos($galleryId) {
+    if(isset($_SESSION['tag'])){
+        if($_SESSION['tag']== 0){
+            $imageList = db_select_all_Images_by_id($galleryId);
+            setValue('imageList', $imageList);
+            unsetSessionValue('tag');
+        }else {
+            $imageList = db_search_Images_by_ids($galleryId, $_SESSION['tag']);
+            setValue('imageList', $imageList);
+            unsetSessionValue('tag');
+        }
+    }else{
+        $imageList = db_select_all_Images_by_id($galleryId);
+        setValue('imageList', $imageList);
+    }
 }
 
 /*
@@ -162,7 +184,7 @@ function getUserName($userId = 0) {
     return $userName;
 }
 
-function setUserDaten($id){
+function setUserDaten($id) {
     $user = db_get_user($id);
     setValue('user', $user);
 }
@@ -183,17 +205,26 @@ function prepareImages($id) {
 }
 
 function setFirstFotoPath($galleryId) {
-    $images = db_select_gallery_teaser($galleryId);
+    $images = db_select_all_Images_by_id($galleryId);
     if ($images == null) {
         setValue('path', '../images/default_images/default.png');
     } else {
-        setValue('path', $images['thumbnail']);
+        setValue('path', $images[0]['thumbnail']);
     }
 }
 
 function setTags() {
     $tags = db_get_all_tags();
     setValue('tags', $tags);
+}
+
+function getTags($imageId) {
+    $tags = db_get_all_tags_by_ImageId($imageId);
+    if ($tags !== null) {
+        return $tags;
+    }else{
+        return null;
+    }
 }
 
 ?>
