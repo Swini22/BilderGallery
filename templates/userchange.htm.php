@@ -7,15 +7,14 @@
 
 <?php setUserDaten($_SESSION['userId']); ?>
 <form name="editing" action="<?php echo getValue('phpmodule'); ?>" method="post">
+
+    <fieldset class="form-group">
+        <label for="email">E-Mail: <?php echo getValue('user')['email']; ?></label>
+    </fieldset>
     
     <fieldset class="form-group">
         <label for="username">Username *</label>
         <input type="text" class="form-control" name="username" value="<?php echo getValue('user')['username']; ?>" id="username" placeholder="example">
-    </fieldset>
-
-    <fieldset class="form-group">
-        <label for="email">E-Mail *</label>
-        <input type="email"  name="email" class="form-control" id="email" value="<?php echo getValue('user')['email']; ?>" placeholder="example@gmail.com">
     </fieldset>
 
     <fieldset class="form-group">
@@ -35,6 +34,8 @@
         </button>
         <button type="submit" name="edit" class="btn btn-success"><i
                 class="glyphicon glyphicon-pencil"></i>&nbsp;Renew
+        </button>
+        <button type="submit" name="break" class="btn btn-warning">Break
         </button>
     </fieldset>
     </form>

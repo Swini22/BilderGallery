@@ -23,7 +23,7 @@ function registration() {
         } else {
             db_insert_user($_REQUEST, passwordHash($_REQUEST['password']));
             setValue('css_class_meldung', "alert-info show");
-            setValue('meldung', "Registration erfolgreich. Bitte melden Sie sich an.");
+            setValue('meldung', "Registration successful. Please sign in");
         }
         // Der Schaltknopf "abbrechen" wurde betätigt
     } else if (isset($_REQUEST['abbrechen'])) {
@@ -43,10 +43,30 @@ function userchange() {
         db_delete_user($_SESSION['userId']);
         logout();
     }
+    else if (isset($_REQUEST['edit'])) {
+        $fehlermeldung = "";
+        $fehlermeldung = checkPasswordAndUsername($fehlermeldung);
+        // Wenn ein Fehler aufgetreten ist
+        if (strlen($fehlermeldung) > 0) {
+            setValue('css_class_meldung', "alert-warning show");
+            setValue('meldung', $fehlermeldung);
+            setValues($_REQUEST);
+            // Wenn alles ok
+        } else {
+            db_change_user($_REQUEST['username'], passwordHash($_REQUEST['password']), $_SESSION['userId']);
+            setValue('css_class_meldung', "alert-info show");
+            setValue('meldung', "user successfully changed.");
+            redirect("fotoalben");
+        }
+        // Der Schaltknopf "abbrechen" wurde betätigt
+    } else if (isset($_REQUEST['break'])) {
+        redirect("fotoalben");
+        exit;
+    }
 
-    // Template abfüllen und Resultat zurückgeben
-    setValue('phpmodule', $_SERVER['PHP_SELF'] . "?id=" . __FUNCTION__);
-    return runTemplate("../templates/userchange.htm.php");
+// Template abfüllen und Resultat zurückgeben
+setValue('phpmodule', $_SERVER['PHP_SELF'] . "?id=" . __FUNCTION__);
+return runTemplate("../templates/userchange.htm.php");
 }
 
 /*
@@ -66,7 +86,7 @@ function login() {
             unset($_SESSION['userId']);
             setValues($_REQUEST);
             setValue('css_class_meldung', "alert-warning show");
-            setValue('meldung', "E-Mail-Passwort kombination konnte nicht gefunden werden. Bitte Eingaben korrigieren oder Registration benutzen.");
+            setValue('meldung', "E-mail-passwort combination couldn't be found. Please correct your input or use registration.");
         }
     }
     // Das Forum wird ohne Angabe der Funktion aufgerufen bzw. es wurde auf die Schaltfläche "abbrechen" geklickt
@@ -105,26 +125,38 @@ function emailExists($email) {
 }
 
 /*
- * Funktion zur Eingabeprüfung bei der Registration
+ * teil 1 Funktion zur Eingabeprüfung bei der Registration
  */
 function checkRegistration() {
     global $css_classes;
     $fehlermeldung = "";
     if (!CheckEmailFormat($_REQUEST['email'])) {
         $css_classes['email'] = getValue('cfg_css_class_error');
-        $fehlermeldung .= "Falsches Format E-Mail. ";
+        $fehlermeldung .= "Incorrect e-mail format. ";
     } elseif (emailExists($_REQUEST['email'])) {
         $css_classes['email'] = getValue('cfg_css_class_error');
-        $fehlermeldung .= "Diese E-Mail Adresse ist bereits vorhanden. ";
+        $fehlermeldung .= "This e-mail adress is already taken. ";
+    }
+    $fehlermeldung .= checkPasswordAndUsername($fehlermeldung);
+    return $fehlermeldung;
+}
+/*
+ * teil 2 Funktion zur Eingabeprüfung bei der Registration und zur prüfng des updates des users
+ */
+function checkPasswordAndUsername($fehlermeldung) {
+    global $css_classes;
+    if (CheckName($_REQUEST['username']) != true) {
+        $css_classes['username'] = getValue('cfg_css_class_error');
+        $fehlermeldung .= "Incorrect username format. ";
     }
     if (!CheckPasswordFormat($_REQUEST['password'])) {
         $css_classes['password'] = getValue('cfg_css_class_error');
-        $fehlermeldung .= "Falsches Format Passwort. ";
+        $fehlermeldung .= "Incorrect password format. ";
     }
     if (!CheckPasswordCompare($_REQUEST['password'], $_REQUEST['password2'])) {
         $css_classes['password'] = getValue('cfg_css_class_error');
         $css_classes['password2'] = getValue('cfg_css_class_error');
-        $fehlermeldung .= "Die beiden Passwörter stimmen nicht überein. ";
+        $fehlermeldung .= "The two passwords do not match. ";
     }
     return $fehlermeldung;
 }

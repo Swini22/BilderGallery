@@ -7,7 +7,6 @@
                 <a href="index.php?id=fotos&gallery=<?php echo $row['id_gallery'] ?>" class="thumbnail">
                     <?php echo setFirstFotoPath($row['id_gallery']) ?>
                     <img src='bild.php?bild=<?php echo getValue('path') ?>' class="img-thumbnail"
-                    <img src='bild.php?bild=<?php echo getValue('path') ?>' class="img-thumbnail"
                          id="<?php echo $row['id_gallery'] ?>" alt="<?php echo $row['name'] ?>">
                 </a>
                 <form method="post" action="<?php echo getValue('phpmodule') ?>">

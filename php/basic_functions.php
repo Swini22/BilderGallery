@@ -50,7 +50,10 @@ function getId() {
     else return "";
 }
 
-
+/*
+ * wenn $_GET['gallery'] gesetzt ist wird sie
+ * in eine sessionvariable geschrieben
+*/
 function getGallery() {
     if (isset($_GET['gallery'])) {
         $_SESSION['recentGallery']= $_GET['gallery'];
@@ -229,15 +232,15 @@ function CheckEmailFormat($value, $empty = 'N') {
 /**
  * Prüft ob Username korrekt ist oder nicht.
  * Erlaubt sind die Zeichen in den eckigen Klammern, mit einer Länge
- * von mindestens 2 Zeichen.
+ * von mindestens 2 bis maximal 50 Zeichen.
  *
  * @param   $value      Eingabewert
- * @param   $empty      Der Name kann leer sein ('Y') oder nicht ('N')
  */
-function CheckName($value, $empty = 'N') {
-    $pattern_name = '/^[a-zA-ZäöüÄÖÜ \-]{2,}$/';
-    if ($empty == 'Y' && empty($value)) return true;
-    if (preg_match($pattern_name, $value)) return true;
+function CheckName($value) {
+    $pattern_name = '/^[a-zA-ZäöüÄÖÜ \-]{2,50}$/';
+    if (preg_match($pattern_name, $value)){
+        return true;
+    }
     else return false;
 }
 
